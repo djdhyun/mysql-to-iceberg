@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Defaults
+DB_NAME="${DB_NAME:-hive-metastore-db}"
+DB_USER="${DB_USER:-hive}"
+DB_HOST="${DB_HOST:-localhost}"
+DB_PORT="${DB_PORT:-5432}"
+
+# Launch psql inside the PostgreSQL container via docker exec
+docker exec -it hive-metastore-db psql \
+  -U "$DB_USER" \
+  -d "$DB_NAME" \
+  "$@"
+
