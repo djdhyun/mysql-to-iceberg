@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Set default catalog name if not overridden
+CATALOG="${CATALOG:-test}"
+
+# Spark SQL entrypoint with Iceberg + HiveCatalog config
+docker exec -it spark spark-sql \
+  --conf spark.sql.extensions=org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions \
+  "$@"

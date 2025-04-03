@@ -1,0 +1,72 @@
+version: "3.8"
+
+services:
+  hive-metastore-db:
+    image: postgres:13
+    container_name: hive-metastore-db
+    environment:
+      - POSTGRES_USER=hive
+      - POSTGRES_PASSWORD=hive
+      - POSTGRES_DB=hive-metastore-db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgresql:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hive -d hive-metastore-db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - spark
+
+  hive-metastore:
+    image: apache/hive:${HIVE_VERSION}
+    platform: linux/amd64
+    container_name: hive-metastore
+    ports:
+      - "9083:9083"
+    environment:
+      - SERVICE_NAME=metastore
+      - DB_DRIVER=postgres
+      - HIVE_AUX_JARS_PATH=/opt/hive/lib/ext
+      - IS_RESUME=${IS_RESUME:-false}
+    volumes:
+      - ./data/warehouse:/opt/hive/data/warehouse
+      - ./config/hive/jars:/opt/hive/lib/ext
+      - ./config/hive/conf/hive-site.xml:/opt/hive/conf/hive-site.xml
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 3 bash -c '</dev/tcp/localhost/9083'"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    depends_on:
+      hive-metastore-db:
+        condition: service_healthy
+    networks:
+      - spark
+
+  spark:
+    image: bitnami/spark:${SPARK_VERSION}
+    container_name: spark
+    environment:
+      - SPARK_MODE=master
+      - ALLOW_EMPTY_PASSWORD=yes
+      - SPARK_CONF_DIR=/opt/bitnami/spark/conf
+    volumes:
+      - ./data/warehouse:/opt/hive/data/warehouse
+      - ./config/spark/jars:/opt/spark/jars/ext
+      - ./config/spark/conf/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf
+      - ./config/spark/conf/log4j2.properties:/opt/bitnami/spark/conf/log4j2.properties
+    ports:
+      - "4040:4040"
+      - "8080:8080"
+    depends_on:
+      hive-metastore:
+        condition: service_healthy
+    networks:
+      - spark
+
+networks:
+  spark:
+    driver: bridge

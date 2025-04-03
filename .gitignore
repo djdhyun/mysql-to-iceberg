@@ -1,0 +1,11 @@
+standalone/data/**
+!standalone/data/*
+
+# Ignore compiled binaries or temp files
+*.class
+*.jar
+*.log
+*.tmp
+*.bak
+*.swp
+.DS_Store
