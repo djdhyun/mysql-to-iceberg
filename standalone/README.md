@@ -55,8 +55,8 @@ warehouse/
 ## Note
 
 - If the hive-metastore service fails to start, it may be due to schema initialization errors. This often happens when the backing PostgreSQL database already contains existing Hive Metastore tables (e.g., TBLS).
-  - In such cases, you can run IS_RESUME=true make up to start the services without reinitializing the schema.
-  - Alternatively, run make clean && make up to completely reset all data and start from a clean state.
-- Spark, Iceberg, and Hive versions must be compatible! Refer to the Makefile for the currently configured versions.
-- Although the official Iceberg documentation claims that Hive 4 supports Iceberg 1.3.0 natively, the apache/hive:4.0.1 Docker image is not compatible with Iceberg 1.3 or 1.4 in practice.
+  - In such cases, you can run `IS_RESUME=true make up` to start the services without reinitializing the schema.
+  - Alternatively, run `make clean && make up` to completely reset all data and start from a clean state.
+- Spark, Iceberg, and Hive versions must be compatible! Refer to the [Makefile](./Makefile) for the currently configured versions.
+- Although the [official Iceberg documentation claims that Hive 4 supports Iceberg 1.4.3 natively](https://iceberg.apache.org/docs/latest/hive/#hive-400), the `apache/hive:4.0.1` Docker image is not compatible with Iceberg 1.3 or 1.4 in practice.
   - You may encounter errors such as: `org.apache.thrift.TApplicationException: Invalid method name: 'get_table'` which suggests a Thrift protocol incompatibility between Iceberg and Hive 4.0.1.
