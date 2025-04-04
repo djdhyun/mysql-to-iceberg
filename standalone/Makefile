@@ -1,5 +1,5 @@
 ICEBERG_VERSION       := 1.4.3
-SPARK_VERSION         := 3.5
+SPARK_VERSION         := 3.4
 SCALA_VERSION         := 2.12
 # NOTE: Hive 4.0.1 doesn't work with Spark 3.5 and Iceberg >= 1.3
 HIVE_VERSION          := 3.1.3 
